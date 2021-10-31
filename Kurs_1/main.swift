@@ -7,219 +7,132 @@
 
 import Foundation
 
-var sportCarOne = SportCar(Name: "Mazda", Year:  2006, Volume: 500)
-var sportCarTwo = SportCar(Name: "Subaru", Year:  2010, Volume: 400)
-
-var trunkCarOne = TrunkCar(Name: "Isuzu", Year:  2012, Volume: 10000)
-var trunkCarTwo = TrunkCar(Name: "Volvo", Year:  2018, Volume: 15000)
-
-sportCarOne.openWindows()
-sportCarOne.closeWindows()
-
-sportCarTwo.startEngine()
-sportCarTwo.stopEngine()
-
-sportCarOne.trunkLoading(250)
-sportCarOne.trunkUnloading(100)
-
-let action = Actions.uploadingcAllVolume
-sportCarOne.actionsWithCar(action)
-
-sportCarOne.printAll()
-
 
 enum Actions {
     case loadingAllVolume
-    case uploadingcAllVolume
+    case unloadingcAllVolume
+    case stopEngine
+    case startEngine
+    case openWindow
+    case closeWindow
 }
 
-struct SportCar {
+enum EngineStatus {
+    case running
+    case stop
+}
+
+enum WindowsStatus {
+    case open
+    case close
+}
+
+
+class Car {
     private let name: String
     private let year: Int
     private let trunkVolume: Int
-    private var isEngineRunnig: Bool = false
-    private var isWindowsOpen: Bool = false
+    private var windowsStatus = WindowsStatus.close
+    private var engineStatus = EngineStatus.stop
     private var trunkLoad: Int = 0
     
-    init (Name name: String,Year year: Int,Volume trunkVolume: Int) {
+    init(name: String, year: Int, trunkVolume: Int) {
         self.name = name
         self.year = year
         self.trunkVolume = trunkVolume
     }
     
-    public mutating func startEngine() {
-        if !isEngineRunnig {
-            isEngineRunnig = true
-            print("ок. двигатель запущен")
-        }
-        else {
-            print("ошибка. двигатель уже запущен")
-        }
-    }
-    
-    mutating func stopEngine() {
-        if isEngineRunnig {
-            isEngineRunnig = false
-            print("ок. двигатель заглушен")
-        }
-        else {
-            print("ошибка. двигатель уже заглушен")
-        }
-    }
-    
-    mutating func openWindows() {
-        if !isEngineRunnig {
-            isEngineRunnig = true
-            print("ок. окна открыты")
-        }
-        else {
+    func OpenWindow() {
+        switch self.windowsStatus {
+        case .open:
             print("ошибка. окна уже открыты")
+        case .close:
+            print("окна открыты")
+            windowsStatus = .open
         }
+        
     }
     
-    mutating func closeWindows() {
-        if isEngineRunnig {
-            isEngineRunnig = false
-            print("ок. окна закрыты")
-        }
-        else {
+    func closeWindow() {
+        switch self.windowsStatus {
+        case .open:
+            print("окна закрыты")
+            windowsStatus = .close
+        case .close:
             print("ошибка. окна уже закрыты")
         }
+        
     }
     
-    mutating func trunkLoading(_ loadVolume: Int) {
-        if trunkLoad + loadVolume < trunkVolume {
-            trunkLoad += loadVolume
-            print("ок. загружено")
-        }
-        else {
-            print("ошибка. не влазит")
-        }
-    }
-    
-    mutating func trunkUnloading(_ loadVolume: Int) {
-        if trunkLoad > loadVolume {
-            trunkLoad -= loadVolume
-            print("ок. выгружено")
-        }
-        else {
-            print("ошибка. тут столько нет")
+    func StartEngine () {
+        switch self.engineStatus {
+        case .running:
+            print("ошибка. двигатель уже работает")
+        case .stop:
+            print("двигатель запущен")
+            engineStatus = .running
         }
     }
     
-    func printAll () {
-        print("Название: \(name)")
-        print("Год: \(year)")
-        print("Обьем: \(trunkVolume)")
-        isEngineRunnig ? print("Двигатель работает") : print("Двигатель заглушен")
-        isWindowsOpen ? print("Окна открыты") : print("Окна закрыты")
-        print("Загрузка: \(trunkLoad)")
-    }
-    
-    mutating func actionsWithCar(_ actions: Actions) {
-        switch actions{
-        case .loadingAllVolume:
-               trunkLoad = trunkVolume
-        case .uploadingcAllVolume:
-                trunkLoad = 0
+    func StopEngien () {
+        switch self.engineStatus {
+        case.running:
+            print("двигатель остановлен")
+            engineStatus = .stop
+        case .stop:
+            print("ошибка. двигатель не работал")
         }
     }
+    
+    func GetTrunkLoad () -> Int {return trunkLoad}
+    func GetTrunkVolume() -> Int {return trunkVolume}
+    
+    func LoadTrunk(value: Int) {
+        trunkLoad + value < trunkVolume ? trunkLoad += value : print("недопустимый обьем")
+    }
+    
+    func UnloadTrunk(value: Int) {
+        trunkLoad - value > 0 ? trunkLoad -= value : print("недопустимый обьем")
+    }
+    
     
     
 }
 
-struct TrunkCar {
-    private let name: String
-    private let year: Int
-    private let trunkVolume: Int
-    private var isEngineRunnig: Bool = false
-    private var isWindowsOpen: Bool = false
-    private var trunkLoad: Int = 0
+
+class SportCar : Car {
+    private let maxSpeed: Int
+    private let seets: Int
     
-    init (Name name: String,Year year: Int,Volume trunkVolume: Int) {
-        self.name = name
-        self.year = year
-        self.trunkVolume = trunkVolume
+    
+    init(name: String, year: Int, trunkVolume: Int, maxSpeed: Int, seets: Int){
+        self.maxSpeed = maxSpeed
+        self.seets = seets
+        super.init(name: name, year: year, trunkVolume: trunkVolume)
     }
     
-    public mutating func startEngine() {
-        if !isEngineRunnig {
-            isEngineRunnig = true
-            print("ок. двигатель запущен")
-        }
-        else {
-            print("ошибка. двигатель уже запущен")
-        }
-    }
-    
-    mutating func stopEngine() {
-        if isEngineRunnig {
-            isEngineRunnig = false
-            print("ок. двигатель заглушен")
-        }
-        else {
-            print("ошибка. двигатель уже заглушен")
-        }
-    }
-    
-    mutating func openWindows() {
-        if !isEngineRunnig {
-            isEngineRunnig = true
-            print("ок. окна открыты")
-        }
-        else {
-            print("ошибка. окна уже открыты")
-        }
-    }
-    
-    mutating func closeWindows() {
-        if isEngineRunnig {
-            isEngineRunnig = false
-            print("ок. окна закрыты")
-        }
-        else {
-            print("ошибка. окна уже закрыты")
-        }
-    }
-    
-    mutating func trunkLoading(_ loadVolume: Int) {
-        if trunkLoad + loadVolume < trunkVolume {
-            trunkLoad += loadVolume
-            print("ок. загружено")
-        }
-        else {
-            print("ошибка. не влазит")
-        }
-    }
-    
-    mutating func trunkUnloading(_ loadVolume: Int) {
-        if trunkLoad > loadVolume {
-            trunkLoad -= loadVolume
-            print("ок. выгружено")
-        }
-        else {
-            print("ошибка. тут столько нет")
-        }
-    }
-    
-    func printAll () {
-        print("Название: \(name)")
-        print("Год: \(year)")
-        print("Обьем: \(trunkVolume)")
-        isEngineRunnig ? print("Двигатель работает") : print("Двигатель заглушен")
-        isWindowsOpen ? print("Окна открыты") : print("Окна закрыты")
-        print("Загрузка: \(trunkLoad)")
-    }
-    
-    mutating func actionsWithCar(_ actions: Actions) {
-        switch actions{
+    func Actions(action: Actions) {
+        switch action {
         case .loadingAllVolume:
-               trunkLoad = trunkVolume
-        case .uploadingcAllVolume:
-                trunkLoad = 0
+            LoadTrunk(value: GetTrunkVolume() - GetTrunkLoad())
+        case .unloadingcAllVolume:
+            UnloadTrunk(value: GetTrunkLoad())
+        case .stopEngine:
+            StopEngien()
+        case .startEngine:
+            StopEngien()
+        case .openWindow:
+            OpenWindow()
+        case .closeWindow:
+            closeWindow()
         }
     }
-    
     
 }
 
+let sportCar: SportCar = SportCar(name: "mazda", year: 2006, trunkVolume: 1000, maxSpeed: 180, seets: 4)
+var action = Actions.openWindow
+sportCar.Actions(action: action)
+
+action = .closeWindow
+sportCar.Actions(action: action)
