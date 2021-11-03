@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Queue<T> {
+final class Queue<T: AnyObject> {
     private var elements: [T] = Array()
     
     init(element: T){ self.elements.append(element) }
@@ -36,9 +36,27 @@ final class Queue<T> {
     }
     
     
-    
     func PrintAllQueue () {
         elements.forEach { print($0) }
+    }
+    
+    func filterQueue(condition: (T) -> Bool) -> [T] {
+        var array = [T]()
+        elements.forEach {
+            if condition($0) { array.append($0) }
+        }
+        return array
+    }
+    
+    func removeAll() {
+        elements.removeAll()
+    }
+    
+    subscript(index: Int) -> T? {
+        if index > elements.count, index >= 0 {
+            return elements[index]
+        } else { return nil }
+        
     }
    
     
